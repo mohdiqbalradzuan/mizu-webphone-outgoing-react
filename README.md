@@ -48,7 +48,7 @@ To Start Server:
 
 To Visit App:
 
-`localhost:3002`
+[Open React Page](http://localhost:3002)
 
 ## Project Screen Shot(s)
 
