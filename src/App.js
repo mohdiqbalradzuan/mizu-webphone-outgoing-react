@@ -13,12 +13,12 @@ function App() {
     loadWebPhone();
 
     return function cleanup() {
-      console.warn("App.js - Unmount component");
+      console.warn(`${process.env.REACT_APP_WEBSITE_NAME} - Unmount component`);
     };
   }, []); // Pass an empty array to only call the function once on mount.
 
   function loadWebPhone() {
-    console.warn("App.js - webphone_api loaded");
+    console.warn(`${process.env.REACT_APP_WEBSITE_NAME} - webphone_api loaded`);
     window.webphone_api.onAppStateChange(function (state) {
       if (state === "loaded") {
         //Webphone library is fully loaded here, don't touch any API before this event
@@ -31,24 +31,19 @@ function App() {
         // Remove bracket from data by Mizu
         callid = callid.replace("[", "");
         callid = callid.replace("]", "");
+        var x_c_callid = "";
 
-        if (event === "setup") {
-          // call init
-          if (direction === 1) {
-            // means it is an outgoing call
-            console.warn(
-              `PSIM - Outgoing call ${peername} - ${peerdisplayname}, Line No: ${line}, CallId: ${callid}`
-            );
-          } else if (direction === 2) {
-            console.warn(
-              `PSIM - Incoming call PeerName: ${peername}, DisplayName: ${peerdisplayname}, Line No: ${line}, CallId: ${callid}`
-            );
-          }
-        } else if (event === "disconnected") {
-          // call disconnect
-          //you might hide Accept, Reject buttons by something like this:
+        window.webphone_api.getsipheader("X-C-Call-ID", function (xcallid) {
+          x_c_callid = xcallid;
+        });
+
+        if (direction === 2 && event === "ringing") {
           console.warn(
-            `PSIM - Call disconnected PeerName: ${peername}, DisplayName: ${peerdisplayname}, Line No: ${line}, CallId: ${callid}`
+            `${process.env.REACT_APP_WEBSITE_NAME} PSIM - Incoming call PeerName: ${peername}, DisplayName: ${peerdisplayname}, Line No: ${line}, CallId: ${callid}, X-C-CallId: ${x_c_callid}. Event: ${event} - Direction: ${direction}`
+          );
+        } else if (event === "disconnected") {
+          console.warn(
+            `${process.env.REACT_APP_WEBSITE_NAME} PSIM - Call disconnected PeerName: ${peername}, DisplayName: ${peerdisplayname}, Line No: ${line}, CallId: ${callid}, X-C-CallId: ${x_c_callid}. Event: ${event} - Direction: ${direction}`
           );
         }
       }
@@ -78,8 +73,10 @@ function App() {
         Demo Outgoing Call using SIP Caller-Id
       </header>
 
-      <div className="row m-0" >
-        <header className="App-header">Outgoing Call using SIP Caller-Id</header>
+      <div className="row m-0">
+        <header className="App-header">
+          Outgoing Call using SIP Caller-Id
+        </header>
         <div className="col-12 d-flex justify-content-center">
           <div className="form-group">
             <input
