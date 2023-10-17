@@ -22,4 +22,5 @@ webphone_api.parameters = {
 
   beeponincoming: 0,
   needunregister: false,
+  playring: 0,
 };
